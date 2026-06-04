@@ -1,0 +1,32 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Log {
+  id          String   @id @default(cuid())
+  timestamp   DateTime
+  model       String
+  prompt      String   @db.Text
+  completion  String   @db.Text
+  latency_ms     Int
+  tokens_used    Int
+  input_tokens   Int?
+  output_tokens  Int?
+  cost_usd       Float
+  project_id  String?
+  user_id     String?
+  session_id  String?
+  tags        String[]
+  created_at  DateTime @default(now())
+
+  @@index([timestamp])
+  @@index([project_id])
+  @@index([user_id])
+  @@index([session_id])
+  @@map("logs")
+}

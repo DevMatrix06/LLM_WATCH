@@ -1,0 +1,31 @@
+{
+  "name": "llmwatch",
+  "version": "0.4.0",
+  "description": "AI observability SDK — wraps Anthropic and OpenAI clients and logs every request",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "prepublishOnly": "npm run build",
+    "test:sdk": "tsx test.ts"
+  },
+  "keywords": ["llm", "observability", "anthropic", "openai", "logging", "monitoring"],
+  "license": "MIT",
+  "engines": { "node": ">=18.0.0" },
+  "peerDependencies": {
+    "@anthropic-ai/sdk": ">=0.20.0",
+    "openai": ">=4.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@anthropic-ai/sdk": { "optional": true },
+    "openai": { "optional": true }
+  },
+  "devDependencies": {
+    "@anthropic-ai/sdk": "^0.37.0",
+    "openai": "^4.77.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0"
+  }
+}
