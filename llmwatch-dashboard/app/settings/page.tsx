@@ -36,34 +36,6 @@ function CodeBlock({ code, language = 'ts' }: { code: string; language?: string 
   );
 }
 
-const ANTHROPIC_SNIPPET = `import Anthropic from '@anthropic-ai/sdk';
-import { wrapAnthropic } from 'loglens';
-
-const client = wrapAnthropic(new Anthropic(), {
-  apiKey: '${apiKey || PLACEHOLDER_KEY}',
-  projectId: 'my-app',
-});
-
-// Use client exactly as before — every call is logged
-const msg = await client.messages.create({
-  model: 'claude-sonnet-4-6',
-  max_tokens: 1024,
-  messages: [{ role: 'user', content: 'Hello!' }],
-});`;
-
-const OPENAI_SNIPPET = `import OpenAI from 'openai';
-import { wrapOpenAI } from 'loglens';
-
-const client = wrapOpenAI(new OpenAI(), {
-  apiKey: '${apiKey || PLACEHOLDER_KEY}',
-  projectId: 'my-app',
-});
-
-const completion = await client.chat.completions.create({
-  model: 'gpt-4o',
-  messages: [{ role: 'user', content: 'Hello!' }],
-});`;
-
 export default function SettingsPage() {
   const [apiKey, setApiKey]       = useState('');
   const [keyLoading, setKeyLoading] = useState(true);
@@ -80,6 +52,35 @@ export default function SettingsPage() {
       .catch(() => {})
       .finally(() => setKeyLoading(false));
   }, []);
+
+  const displayedKey = apiKey || PLACEHOLDER_KEY;
+  const ANTHROPIC_SNIPPET = `import Anthropic from '@anthropic-ai/sdk';
+import { wrapAnthropic } from 'loglens';
+
+const client = wrapAnthropic(new Anthropic(), {
+  apiKey: '${displayedKey}',
+  projectId: 'my-app',
+});
+
+// Use client exactly as before — every call is logged
+const msg = await client.messages.create({
+  model: 'claude-sonnet-4-6',
+  max_tokens: 1024,
+  messages: [{ role: 'user', content: 'Hello!' }],
+});`;
+
+  const OPENAI_SNIPPET = `import OpenAI from 'openai';
+import { wrapOpenAI } from 'loglens';
+
+const client = wrapOpenAI(new OpenAI(), {
+  apiKey: '${displayedKey}',
+  projectId: 'my-app',
+});
+
+const completion = await client.chat.completions.create({
+  model: 'gpt-4o',
+  messages: [{ role: 'user', content: 'Hello!' }],
+});`;
 
   // Cost alert state
   const [alertEmail, setAlertEmail]       = useState('');
