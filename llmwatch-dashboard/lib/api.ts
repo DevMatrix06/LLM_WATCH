@@ -13,6 +13,8 @@ export interface ApiLog {
   input_tokens: number | null;
   output_tokens: number | null;
   cost_usd: number;
+  error_type: string | null;
+  error_message: string | null;
   project_id: string | null;
   user_id: string | null;
   session_id: string | null;

@@ -26,6 +26,21 @@ function devLog(payload: LogPayload, options: WatchOptions): void {
   }
 
   const enriched = buildEnriched(payload, options);
+
+  if (payload.error_type) {
+    const meta = [
+      payload.model,
+      `${payload.latency_ms}ms`,
+      `ERROR: ${payload.error_type}`,
+      enriched.projectId && `project:${enriched.projectId}`,
+    ].filter(Boolean).join('  ·  ');
+    console.error(`[loglens] ${meta}`);
+    console.error(`  prompt:  ${truncate(payload.prompt)}`);
+    console.error(`  error:   ${payload.error_message ?? ''}`);
+    console.error('');
+    return;
+  }
+
   const cost = payload.cost_usd > 0 ? `$${payload.cost_usd.toFixed(6)}` : 'cost unknown';
 
   const meta = [

@@ -1,9 +1,9 @@
 'use client';
 
-import { X, Copy, Check } from 'lucide-react';
+import { X, Copy, Check, AlertTriangle } from 'lucide-react';
 import { useState, useCallback } from 'react';
 import type { ApiLog } from '@/lib/api';
-import { ModelBadge, LatencyBadge } from '@/components/ui/badge';
+import { ModelBadge, LatencyBadge, ErrorBadge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { formatCost } from '@/lib/utils';
 
@@ -61,10 +61,13 @@ export function LogDetail({ log, onClose }: LogDetailProps) {
         {!log ? null : (
           <>
             {/* Header */}
-            <div className="flex items-center justify-between border-b border-zinc-800 px-5 py-3.5">
+            <div className={`flex items-center justify-between border-b px-5 py-3.5 ${
+              log.error_type ? 'border-red-900/40 bg-red-950/20' : 'border-zinc-800'
+            }`}>
               <div className="flex items-center gap-2.5">
                 <span className="font-mono text-xs text-zinc-500">{log.id}</span>
                 <ModelBadge model={log.model} />
+                {log.error_type && <ErrorBadge type={log.error_type} />}
               </div>
               <Button variant="ghost" size="sm" onClick={onClose}>
                 <X className="h-3.5 w-3.5" />
@@ -154,6 +157,21 @@ export function LogDetail({ log, onClose }: LogDetailProps) {
                   </div>
                 ))}
               </div>
+
+              {/* Error block */}
+              {log.error_type && (
+                <div className="px-5 py-4 border-b border-red-900/30 bg-red-950/10">
+                  <div className="mb-2 flex items-center gap-2">
+                    <AlertTriangle className="h-3.5 w-3.5 text-red-400" />
+                    <span className="text-[11px] font-medium uppercase tracking-wider text-red-400/70">
+                      Error
+                    </span>
+                  </div>
+                  <p className="font-mono text-xs text-red-300/90 leading-relaxed">
+                    {log.error_message ?? log.error_type}
+                  </p>
+                </div>
+              )}
 
               {/* Prompt */}
               <div className="px-5 py-4 border-b border-zinc-800/60">

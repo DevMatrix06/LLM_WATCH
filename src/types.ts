@@ -6,6 +6,8 @@ export interface LogPayload {
   latency_ms: number;
   tokens_used: number;
   cost_usd: number;
+  error_type?: string;
+  error_message?: string;
   projectId?: string;
   userId?: string;
   sessionId?: string;

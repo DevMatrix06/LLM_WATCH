@@ -14,6 +14,8 @@ const LogPayloadSchema = z.object({
   input_tokens:  z.number().int().nonnegative().optional(),
   output_tokens: z.number().int().nonnegative().optional(),
   cost_usd:      z.number().nonnegative(),
+  error_type:    z.string().max(100).optional(),
+  error_message: z.string().max(10_000).optional(),
   project_id:    z.string().max(100).optional(),
   user_id:       z.string().max(100).optional(),
   session_id:    z.string().max(100).optional(),
@@ -47,6 +49,8 @@ ingestRouter.post('/', requireApiKey, async (req, res) => {
         input_tokens:  d.input_tokens  ?? null,
         output_tokens: d.output_tokens ?? null,
         cost_usd:      d.cost_usd,
+        error_type:    d.error_type    ?? null,
+        error_message: d.error_message ?? null,
         project_id:    d.project_id    ?? null,
         user_id:       d.user_id       ?? null,
         session_id:    d.session_id    ?? null,
@@ -55,7 +59,9 @@ ingestRouter.post('/', requireApiKey, async (req, res) => {
     });
 
     res.status(200).json({ ok: true });
-    maybeSendCostAlert(d.cost_usd, d.model, d.prompt).catch(() => {});
+    if (!d.error_type) {
+      maybeSendCostAlert(d.cost_usd, d.model, d.prompt).catch(() => {});
+    }
   } catch (err) {
     console.error('[loglens] DB write error:', err);
     res.status(500).json({ error: 'Internal server error' });

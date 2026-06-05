@@ -17,6 +17,25 @@ function extractPrompt(params: Record<string, unknown>): string {
     .join('\n');
 }
 
+function errorPayload(
+  start: number,
+  model: string,
+  prompt: string,
+  err: unknown,
+): LogPayload {
+  return {
+    timestamp:     new Date(start).toISOString(),
+    model,
+    prompt,
+    completion:    '',
+    latency_ms:    Date.now() - start,
+    tokens_used:   0,
+    cost_usd:      0,
+    error_type:    err instanceof Error ? err.constructor.name : 'UnknownError',
+    error_message: err instanceof Error ? err.message : String(err),
+  };
+}
+
 async function* interceptStream(
   stream: AsyncIterable<ChatCompletionChunk>,
   start: number,
@@ -27,6 +46,7 @@ async function* interceptStream(
   let inputTokens = 0;
   let outputTokens = 0;
   let model = params.model as string;
+  let thrownError: unknown;
 
   try {
     for await (const chunk of stream) {
@@ -36,21 +56,27 @@ async function* interceptStream(
       if (delta) completion += delta;
       // stream_options: { include_usage: true } makes usage appear on the final chunk
       if (chunk.usage) {
-        inputTokens = chunk.usage.prompt_tokens ?? 0;
+        inputTokens  = chunk.usage.prompt_tokens     ?? 0;
         outputTokens = chunk.usage.completion_tokens ?? 0;
       }
     }
+  } catch (err) {
+    thrownError = err;
+    throw err;
   } finally {
-    const payload: LogPayload = {
-      timestamp: new Date(start).toISOString(),
-      model,
-      prompt: extractPrompt(params),
-      completion,
-      latency_ms: Date.now() - start,
-      tokens_used: inputTokens + outputTokens,
-      cost_usd: calcCost(model, inputTokens, outputTokens),
-    };
-    sendLog(payload, options);
+    if (thrownError !== undefined) {
+      sendLog(errorPayload(start, model, extractPrompt(params), thrownError), options);
+    } else {
+      sendLog({
+        timestamp:   new Date(start).toISOString(),
+        model,
+        prompt:      extractPrompt(params),
+        completion,
+        latency_ms:  Date.now() - start,
+        tokens_used: inputTokens + outputTokens,
+        cost_usd:    calcCost(model, inputTokens, outputTokens),
+      }, options);
+    }
   }
 }
 
@@ -71,27 +97,36 @@ export function wrapOpenAI<T extends { chat: { completions: { create: (...args: 
     const start = Date.now();
 
     if (params.stream) {
-      const stream = await orig(params, requestOptions);
-      return interceptStream(stream, start, params, options);
+      try {
+        const stream = await orig(params, requestOptions);
+        return interceptStream(stream, start, params, options);
+      } catch (err) {
+        sendLog(errorPayload(start, params.model as string, extractPrompt(params), err), options);
+        throw err;
+      }
     }
 
-    const response: ChatCompletion = await orig(params, requestOptions);
-    const inputTokens = response.usage?.prompt_tokens ?? 0;
-    const outputTokens = response.usage?.completion_tokens ?? 0;
-    const model = response.model ?? (params.model as string);
+    try {
+      const response: ChatCompletion = await orig(params, requestOptions);
+      const inputTokens  = response.usage?.prompt_tokens     ?? 0;
+      const outputTokens = response.usage?.completion_tokens ?? 0;
+      const model        = response.model ?? (params.model as string);
 
-    const payload: LogPayload = {
-      timestamp: new Date(start).toISOString(),
-      model,
-      prompt: extractPrompt(params),
-      completion: response.choices?.[0]?.message?.content ?? '',
-      latency_ms: Date.now() - start,
-      tokens_used: inputTokens + outputTokens,
-      cost_usd: calcCost(model, inputTokens, outputTokens),
-    };
-    sendLog(payload, options);
+      sendLog({
+        timestamp:   new Date(start).toISOString(),
+        model,
+        prompt:      extractPrompt(params),
+        completion:  response.choices?.[0]?.message?.content ?? '',
+        latency_ms:  Date.now() - start,
+        tokens_used: inputTokens + outputTokens,
+        cost_usd:    calcCost(model, inputTokens, outputTokens),
+      }, options);
 
-    return response;
+      return response;
+    } catch (err) {
+      sendLog(errorPayload(start, params.model as string, extractPrompt(params), err), options);
+      throw err;
+    }
   };
 
   return client;

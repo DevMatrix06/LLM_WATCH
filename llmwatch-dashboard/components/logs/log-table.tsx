@@ -3,7 +3,7 @@
 import { useState, useMemo, useEffect, useCallback } from 'react';
 import { Search, SlidersHorizontal, ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
 import type { ApiLog, LogsResponse } from '@/lib/api';
-import { ModelBadge, LatencyBadge } from '@/components/ui/badge';
+import { ModelBadge, LatencyBadge, ErrorBadge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { LogDetail } from './log-detail';
@@ -154,18 +154,31 @@ export function LogTable() {
                 <tr
                   key={log.id}
                   onClick={() => setSelected(log)}
-                  className="group cursor-pointer transition-colors hover:bg-zinc-900/80"
+                  className={`group cursor-pointer transition-colors ${
+                    log.error_type
+                      ? 'bg-red-950/20 hover:bg-red-950/30 border-l-2 border-l-red-500/40'
+                      : 'hover:bg-zinc-900/80'
+                  }`}
                 >
                   <td className="py-3 pl-6 pr-4 text-xs text-zinc-500">
                     {formatRelativeTime(log.timestamp)}
                   </td>
                   <td className="py-3 px-4">
-                    <ModelBadge model={log.model} />
+                    <div className="flex flex-col gap-1">
+                      <ModelBadge model={log.model} />
+                      {log.error_type && <ErrorBadge type={log.error_type} />}
+                    </div>
                   </td>
                   <td className="py-3 px-4 max-w-0">
+                    {log.error_type ? (
+                      <p className="truncate text-xs text-red-400/80">
+                        {log.error_message ?? log.error_type}
+                      </p>
+                    ) : (
                     <p className="truncate text-xs text-zinc-400 transition-colors group-hover:text-zinc-300">
                       {log.prompt}
                     </p>
+                    )}
                   </td>
                   <td className="py-3 px-4">
                     <LatencyBadge ms={log.latency_ms} />

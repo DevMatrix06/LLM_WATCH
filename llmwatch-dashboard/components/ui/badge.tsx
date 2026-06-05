@@ -54,6 +54,15 @@ export function ModelBadge({ model, className }: { model: string; className?: st
   );
 }
 
+export function ErrorBadge({ type }: { type: string }) {
+  return (
+    <span className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[11px] font-medium ring-1 ring-inset bg-red-500/10 text-red-400 ring-red-500/20 whitespace-nowrap">
+      <span className="h-1 w-1 rounded-full bg-red-400" />
+      {type}
+    </span>
+  );
+}
+
 export function LatencyBadge({ ms }: { ms: number }) {
   const color =
     ms < 500  ? 'text-emerald-400' :

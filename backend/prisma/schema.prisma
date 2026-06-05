@@ -18,6 +18,8 @@ model Log {
   input_tokens   Int?
   output_tokens  Int?
   cost_usd       Float
+  error_type    String?
+  error_message String?  @db.Text
   project_id  String?
   user_id     String?
   session_id  String?

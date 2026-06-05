@@ -26,6 +26,25 @@ function extractCompletion(response: Message): string {
     .join('');
 }
 
+function errorPayload(
+  start: number,
+  model: string,
+  prompt: string,
+  err: unknown,
+): LogPayload {
+  return {
+    timestamp:     new Date(start).toISOString(),
+    model,
+    prompt,
+    completion:    '',
+    latency_ms:    Date.now() - start,
+    tokens_used:   0,
+    cost_usd:      0,
+    error_type:    err instanceof Error ? err.constructor.name : 'UnknownError',
+    error_message: err instanceof Error ? err.message : String(err),
+  };
+}
+
 async function* interceptStream(
   stream: AsyncIterable<RawMessageStreamEvent>,
   start: number,
@@ -35,6 +54,7 @@ async function* interceptStream(
   let completion = '';
   let inputTokens = 0;
   let outputTokens = 0;
+  let thrownError: unknown;
 
   try {
     for await (const event of stream) {
@@ -48,18 +68,24 @@ async function* interceptStream(
         outputTokens = e.usage?.output_tokens ?? 0;
       }
     }
+  } catch (err) {
+    thrownError = err;
+    throw err;
   } finally {
     const model = params.model as string;
-    const payload: LogPayload = {
-      timestamp: new Date(start).toISOString(),
-      model,
-      prompt: extractPrompt(params),
-      completion,
-      latency_ms: Date.now() - start,
-      tokens_used: inputTokens + outputTokens,
-      cost_usd: calcCost(model, inputTokens, outputTokens),
-    };
-    sendLog(payload, options);
+    if (thrownError !== undefined) {
+      sendLog(errorPayload(start, model, extractPrompt(params), thrownError), options);
+    } else {
+      sendLog({
+        timestamp:   new Date(start).toISOString(),
+        model,
+        prompt:      extractPrompt(params),
+        completion,
+        latency_ms:  Date.now() - start,
+        tokens_used: inputTokens + outputTokens,
+        cost_usd:    calcCost(model, inputTokens, outputTokens),
+      }, options);
+    }
   }
 }
 
@@ -80,26 +106,35 @@ export function wrapAnthropic<T extends { messages: { create: (...args: any[]) =
     const start = Date.now();
 
     if (params.stream) {
-      const stream = await orig(params, requestOptions);
-      return interceptStream(stream, start, params, options);
+      try {
+        const stream = await orig(params, requestOptions);
+        return interceptStream(stream, start, params, options);
+      } catch (err) {
+        sendLog(errorPayload(start, params.model as string, extractPrompt(params), err), options);
+        throw err;
+      }
     }
 
-    const response: Message = await orig(params, requestOptions);
-    const inputTokens = response.usage?.input_tokens ?? 0;
-    const outputTokens = response.usage?.output_tokens ?? 0;
+    try {
+      const response: Message = await orig(params, requestOptions);
+      const inputTokens  = response.usage?.input_tokens  ?? 0;
+      const outputTokens = response.usage?.output_tokens ?? 0;
 
-    const payload: LogPayload = {
-      timestamp: new Date(start).toISOString(),
-      model: response.model,
-      prompt: extractPrompt(params),
-      completion: extractCompletion(response),
-      latency_ms: Date.now() - start,
-      tokens_used: inputTokens + outputTokens,
-      cost_usd: calcCost(response.model, inputTokens, outputTokens),
-    };
-    sendLog(payload, options);
+      sendLog({
+        timestamp:   new Date(start).toISOString(),
+        model:       response.model,
+        prompt:      extractPrompt(params),
+        completion:  extractCompletion(response),
+        latency_ms:  Date.now() - start,
+        tokens_used: inputTokens + outputTokens,
+        cost_usd:    calcCost(response.model, inputTokens, outputTokens),
+      }, options);
 
-    return response;
+      return response;
+    } catch (err) {
+      sendLog(errorPayload(start, params.model as string, extractPrompt(params), err), options);
+      throw err;
+    }
   };
 
   // messages.stream() is the high-level streaming helper — it returns a MessageStream
@@ -117,18 +152,21 @@ export function wrapAnthropic<T extends { messages: { create: (...args: any[]) =
       const messageStream = origStream(params, requestOptions);
 
       messageStream.on('finalMessage', (message: any) => {
-        const inputTokens: number = message.usage?.input_tokens ?? 0;
+        const inputTokens: number  = message.usage?.input_tokens  ?? 0;
         const outputTokens: number = message.usage?.output_tokens ?? 0;
-        const payload: LogPayload = {
-          timestamp: new Date(start).toISOString(),
-          model: message.model as string,
-          prompt: extractPrompt(params),
-          completion: extractCompletion(message as Message),
-          latency_ms: Date.now() - start,
+        sendLog({
+          timestamp:   new Date(start).toISOString(),
+          model:       message.model as string,
+          prompt:      extractPrompt(params),
+          completion:  extractCompletion(message as Message),
+          latency_ms:  Date.now() - start,
           tokens_used: inputTokens + outputTokens,
-          cost_usd: calcCost(message.model as string, inputTokens, outputTokens),
-        };
-        sendLog(payload, options);
+          cost_usd:    calcCost(message.model as string, inputTokens, outputTokens),
+        }, options);
+      });
+
+      messageStream.on('error', (err: Error) => {
+        sendLog(errorPayload(start, params.model as string, extractPrompt(params), err), options);
       });
 
       return messageStream;
