@@ -55,7 +55,7 @@ export default function SettingsPage() {
 
   const displayedKey = apiKey || PLACEHOLDER_KEY;
   const ANTHROPIC_SNIPPET = `import Anthropic from '@anthropic-ai/sdk';
-import { wrapAnthropic } from 'loglens';
+import { wrapAnthropic } from 'loglens-sdk';
 
 const client = wrapAnthropic(new Anthropic(), {
   apiKey: '${displayedKey}',
@@ -70,7 +70,7 @@ const msg = await client.messages.create({
 });`;
 
   const OPENAI_SNIPPET = `import OpenAI from 'openai';
-import { wrapOpenAI } from 'loglens';
+import { wrapOpenAI } from 'loglens-sdk';
 
 const client = wrapOpenAI(new OpenAI(), {
   apiKey: '${displayedKey}',
@@ -284,7 +284,7 @@ const completion = await client.chat.completions.create({
             {/* Install */}
             <div>
               <p className="mb-2 text-xs font-medium text-zinc-500">1. Install</p>
-              <CodeBlock code="npm install loglens" language="bash" />
+              <CodeBlock code="npm install loglens-sdk" language="bash" />
             </div>
 
             {/* Tabs */}
