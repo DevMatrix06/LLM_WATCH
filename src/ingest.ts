@@ -76,7 +76,7 @@ export function sendLog(payload: LogPayload, options: WatchOptions): void {
     headers: {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${options.apiKey}`,
-      'User-Agent': 'loglens-sdk/0.4.1',
+      'User-Agent': 'loglens-sdk/0.4.2',
     },
     body,
   }).then(res => {
