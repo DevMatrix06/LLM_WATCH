@@ -1,6 +1,6 @@
 import { LogPayload, WatchOptions } from './types';
 
-const DEFAULT_ENDPOINT = 'https://api.loglens.io/ingest';
+const DEFAULT_ENDPOINT = 'https://llmwatch-production.up.railway.app/ingest';
 
 // Printed once per process so dev mode is obvious but not spammy.
 let devNoticePrinted = false;
@@ -76,7 +76,7 @@ export function sendLog(payload: LogPayload, options: WatchOptions): void {
     headers: {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${options.apiKey}`,
-      'User-Agent': 'loglens-sdk/0.4.0',
+      'User-Agent': 'loglens-sdk/0.4.1',
     },
     body,
   }).then(res => {
