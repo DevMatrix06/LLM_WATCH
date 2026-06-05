@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "loglens-sdk"
+version = "0.1.0"
+description = "LLM observability SDK — wraps Anthropic and OpenAI Python clients and logs every call"
+requires-python = ">=3.9"
+license = {text = "MIT"}
+keywords = ["llm", "observability", "anthropic", "openai", "logging", "monitoring"]
+dependencies = []
+
+[project.optional-dependencies]
+anthropic = ["anthropic>=0.20.0"]
+openai = ["openai>=1.0.0"]
+all = ["anthropic>=0.20.0", "openai>=1.0.0"]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["loglens*"]
