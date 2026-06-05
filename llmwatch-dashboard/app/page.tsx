@@ -38,7 +38,7 @@ const FEATURES = [
   },
 ] as const;
 
-const FREE_FEATURES  = [
+const FREE_FEATURES = [
   '1,000 requests / month',
   '1 project',
   '7-day log retention',
@@ -48,10 +48,18 @@ const FREE_FEATURES  = [
 
 const PRO_FEATURES = [
   'Unlimited requests',
+  '3 projects',
+  '30-day log retention',
+  'All model support',
+  'Email support',
+];
+
+const TEAM_FEATURES = [
+  'Unlimited requests',
   'Unlimited projects',
   '90-day log retention',
-  'Custom cost alerts',
   'Team access',
+  'Custom cost alerts',
   'Priority support',
   'Evals — coming Q3 2026',
 ];
@@ -243,13 +251,13 @@ export default async function LandingPage() {
             <p className="mt-3 text-zinc-500">Start free. Upgrade when you need more.</p>
           </div>
 
-          <div className="mx-auto grid max-w-2xl gap-6 md:grid-cols-2">
+          <div className="mx-auto grid max-w-4xl gap-6 md:grid-cols-3">
             {/* Free */}
             <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-7">
               <h3 className="text-base font-semibold text-zinc-200">Free</h3>
               <div className="mt-3 flex items-baseline gap-1">
                 <span className="text-4xl font-bold text-zinc-50">$0</span>
-                <span className="text-zinc-500">/ month</span>
+                <span className="text-zinc-500">/ mo</span>
               </div>
               <p className="mt-1 text-xs text-zinc-600">No credit card required</p>
 
@@ -280,8 +288,8 @@ export default async function LandingPage() {
 
               <h3 className="text-base font-semibold text-zinc-200">Pro</h3>
               <div className="mt-3 flex items-baseline gap-1">
-                <span className="text-4xl font-bold text-zinc-50">$49</span>
-                <span className="text-zinc-500">/ month</span>
+                <span className="text-4xl font-bold text-zinc-50">$5</span>
+                <span className="text-zinc-500">/ mo</span>
               </div>
               <p className="mt-1 text-xs text-zinc-600">per workspace</p>
 
@@ -297,6 +305,32 @@ export default async function LandingPage() {
               <a
                 href="#waitlist"
                 className="mt-8 block w-full rounded-lg bg-indigo-600 py-2.5 text-center text-sm font-medium text-white transition-colors hover:bg-indigo-500"
+              >
+                Join the waitlist
+              </a>
+            </div>
+
+            {/* Team */}
+            <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-7">
+              <h3 className="text-base font-semibold text-zinc-200">Team</h3>
+              <div className="mt-3 flex items-baseline gap-1">
+                <span className="text-4xl font-bold text-zinc-50">$10</span>
+                <span className="text-zinc-500">/ mo</span>
+              </div>
+              <p className="mt-1 text-xs text-zinc-600">per workspace</p>
+
+              <ul className="mt-6 space-y-3">
+                {TEAM_FEATURES.map(f => (
+                  <li key={f} className="flex items-center gap-2.5 text-sm text-zinc-400">
+                    <Check className="h-3.5 w-3.5 shrink-0 text-violet-400" />
+                    {f}
+                  </li>
+                ))}
+              </ul>
+
+              <a
+                href="#waitlist"
+                className="mt-8 block w-full rounded-lg border border-zinc-700 py-2.5 text-center text-sm font-medium text-zinc-300 transition-colors hover:border-zinc-600 hover:text-zinc-100"
               >
                 Join the waitlist
               </a>
