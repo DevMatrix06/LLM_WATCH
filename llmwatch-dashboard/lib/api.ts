@@ -62,6 +62,39 @@ export interface LogsResponse {
 const backend = () => process.env.BACKEND_URL ?? 'http://localhost:3001';
 const authHeader = () => ({ Authorization: `Bearer ${process.env.BACKEND_API_KEY ?? ''}` });
 
+export interface AdminData {
+  totalVisits: number;
+  totalSignups: number;
+  signups: Array<{ id: string; email: string; created_at: string }>;
+}
+
+export async function fetchWaitlistCount(): Promise<number> {
+  try {
+    const res = await fetch(`${backend()}/api/waitlist/count`, {
+      headers: authHeader(),
+      cache: 'no-store',
+    });
+    if (!res.ok) return 0;
+    const data = await res.json() as { count: number };
+    return data.count ?? 0;
+  } catch {
+    return 0;
+  }
+}
+
+export async function fetchAdminData(): Promise<AdminData | null> {
+  try {
+    const res = await fetch(`${backend()}/api/admin/overview`, {
+      headers: authHeader(),
+      cache: 'no-store',
+    });
+    if (!res.ok) return null;
+    return res.json() as Promise<AdminData>;
+  } catch {
+    return null;
+  }
+}
+
 export async function fetchOverviewStats(days = 30): Promise<OverviewStats | null> {
   try {
     const res = await fetch(`${backend()}/api/stats/overview?days=${days}`, {
