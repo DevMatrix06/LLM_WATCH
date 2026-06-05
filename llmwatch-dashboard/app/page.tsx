@@ -161,9 +161,9 @@ export default async function LandingPage() {
           <div className="mx-auto mt-10 flex max-w-xs items-center gap-3 rounded-lg border border-zinc-700/60 bg-zinc-900 px-4 py-3">
             <Terminal className="h-4 w-4 shrink-0 text-zinc-600" />
             <code className="flex-1 text-left font-mono text-sm text-zinc-200">
-              npm install loglens
+              npm install loglens-sdk
             </code>
-            <CopyButton text="npm install loglens" />
+            <CopyButton text="npm install loglens-sdk" />
           </div>
 
           <p className="mt-3 text-xs text-zinc-600">
