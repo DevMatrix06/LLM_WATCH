@@ -30,3 +30,20 @@ model Log {
   @@index([session_id])
   @@map("logs")
 }
+
+model WaitlistEntry {
+  id         String   @id @default(cuid())
+  email      String   @unique
+  created_at DateTime @default(now())
+
+  @@map("waitlist")
+}
+
+model PageVisit {
+  id         String   @id @default(cuid())
+  page       String   @default("/")
+  created_at DateTime @default(now())
+
+  @@index([page])
+  @@map("page_visits")
+}

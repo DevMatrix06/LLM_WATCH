@@ -13,7 +13,7 @@ import {
 import { cn } from '@/lib/utils';
 
 const NAV = [
-  { href: '/',         label: 'Overview', icon: LayoutDashboard },
+  { href: '/dashboard', label: 'Overview', icon: LayoutDashboard },
   { href: '/logs',     label: 'Logs',     icon: ScrollText       },
   { href: '/evals',    label: 'Evals',    icon: FlaskConical     },
   { href: '/settings', label: 'Settings', icon: Settings         },
