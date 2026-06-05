@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { UserButton } from '@clerk/nextjs';
 import {
   LayoutDashboard,
   ScrollText,
@@ -66,11 +67,19 @@ export function Sidebar() {
       </nav>
 
       {/* Footer */}
-      <div className="border-t border-zinc-800/60 px-4 py-3">
+      <div className="border-t border-zinc-800/60 px-4 py-3 space-y-2.5">
         <div className="flex items-center gap-2">
           <div className="h-1.5 w-1.5 rounded-full bg-emerald-500 shadow-[0_0_4px_1px_rgb(16,185,129,0.5)]" />
           <span className="text-[11px] text-zinc-600">All systems operational</span>
         </div>
+        <UserButton
+          appearance={{
+            elements: {
+              avatarBox: 'h-7 w-7',
+              userButtonPopoverCard: 'bg-zinc-900 border border-zinc-800',
+            },
+          }}
+        />
       </div>
     </aside>
   );

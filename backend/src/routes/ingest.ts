@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { z } from 'zod';
 import { prisma } from '../lib/prisma';
-import { requireApiKey } from '../middleware/auth';
+import { requireUserKey } from '../middleware/auth';
 import { maybeSendCostAlert } from '../lib/alerts';
 
 const LogPayloadSchema = z.object({
@@ -24,7 +24,7 @@ const LogPayloadSchema = z.object({
 
 export const ingestRouter = Router();
 
-ingestRouter.post('/', requireApiKey, async (req, res) => {
+ingestRouter.post('/', requireUserKey, async (req, res) => {
   const result = LogPayloadSchema.safeParse(req.body);
 
   if (!result.success) {
@@ -36,6 +36,7 @@ ingestRouter.post('/', requireApiKey, async (req, res) => {
   }
 
   const d = result.data;
+  const owner = (req as any).loglensUser as { clerk_user_id: string };
 
   try {
     await prisma.log.create({
@@ -51,6 +52,7 @@ ingestRouter.post('/', requireApiKey, async (req, res) => {
         cost_usd:      d.cost_usd,
         error_type:    d.error_type    ?? null,
         error_message: d.error_message ?? null,
+        owner_id:      owner.clerk_user_id,
         project_id:    d.project_id    ?? null,
         user_id:       d.user_id       ?? null,
         session_id:    d.session_id    ?? null,

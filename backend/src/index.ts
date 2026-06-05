@@ -7,6 +7,7 @@ import { waitlistRouter } from './routes/waitlist';
 import { analyticsRouter } from './routes/analytics';
 import { adminRouter }    from './routes/admin';
 import { settingsRouter } from './routes/settings';
+import { userRouter }     from './routes/user';
 
 if (!process.env.API_KEY) {
   console.error('[loglens] ERROR: API_KEY environment variable must be set');
@@ -30,6 +31,7 @@ app.use('/api/waitlist',   waitlistRouter);
 app.use('/api/analytics',  analyticsRouter);
 app.use('/api/admin',      adminRouter);
 app.use('/api/settings',   settingsRouter);
+app.use('/api/user',       userRouter);
 
 const PORT = Number(process.env.PORT ?? 3001);
 app.listen(PORT, () => {

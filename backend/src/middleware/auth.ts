@@ -1,5 +1,6 @@
 import { createHash, timingSafeEqual } from 'crypto';
 import type { Request, Response, NextFunction } from 'express';
+import { prisma } from '../lib/prisma';
 
 // Hash both sides before comparing so timingSafeEqual always gets equal-length buffers,
 // which also prevents length-based timing leaks on the raw key.
@@ -25,5 +26,26 @@ export function requireApiKey(req: Request, res: Response, next: NextFunction): 
     return;
   }
 
+  next();
+}
+
+// Validates a per-user API key from the DB and attaches the user to the request.
+export async function requireUserKey(req: Request, res: Response, next: NextFunction): Promise<void> {
+  const auth = req.headers.authorization;
+
+  if (!auth?.startsWith('Bearer ')) {
+    res.status(401).json({ error: 'Missing or malformed Authorization header' });
+    return;
+  }
+
+  const apiKey = auth.slice(7).trim();
+
+  const user = await prisma.user.findUnique({ where: { api_key: apiKey } });
+  if (!user) {
+    res.status(401).json({ error: 'Invalid API key' });
+    return;
+  }
+
+  (req as any).loglensUser = user;
   next();
 }

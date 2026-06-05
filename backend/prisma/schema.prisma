@@ -7,6 +7,15 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id            String   @id @default(cuid())
+  clerk_user_id String   @unique
+  api_key       String   @unique
+  created_at    DateTime @default(now())
+
+  @@map("users")
+}
+
 model Log {
   id          String   @id @default(cuid())
   timestamp   DateTime
@@ -20,6 +29,7 @@ model Log {
   cost_usd       Float
   error_type    String?
   error_message String?  @db.Text
+  owner_id    String?
   project_id  String?
   user_id     String?
   session_id  String?
@@ -27,6 +37,7 @@ model Log {
   created_at  DateTime @default(now())
 
   @@index([timestamp])
+  @@index([owner_id])
   @@index([project_id])
   @@index([user_id])
   @@index([session_id])

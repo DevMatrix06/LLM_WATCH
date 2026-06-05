@@ -14,6 +14,9 @@ statsRouter.get('/overview', requireApiKey, async (req, res) => {
   const now = new Date();
   const currentStart  = new Date(now.getTime() - days * 86_400_000);
   const previousStart = new Date(currentStart.getTime() - days * 86_400_000);
+  const ownerId = req.headers['x-clerk-user-id'] as string | undefined;
+
+  const ownerFilter = ownerId ? { owner_id: ownerId } : {};
 
   try {
     type DailyRow = {
@@ -24,47 +27,61 @@ statsRouter.get('/overview', requireApiKey, async (req, res) => {
       avg_latency: unknown;
     };
 
-    const [currentAgg, previousAgg, dailyRows, modelGroups, recentLogs] = await Promise.all([
+    const dailyRows = ownerId
+      ? await prisma.$queryRaw<DailyRow[]>`
+          SELECT
+            TO_CHAR(DATE_TRUNC('day', timestamp), 'YYYY-MM-DD') AS date,
+            COUNT(*)::int                                        AS requests,
+            COALESCE(SUM(cost_usd),      0)                     AS cost,
+            COALESCE(SUM(tokens_used)::int, 0)                  AS tokens,
+            COALESCE(AVG(latency_ms)::int, 0)                   AS avg_latency
+          FROM logs
+          WHERE timestamp >= ${currentStart} AND owner_id = ${ownerId}
+          GROUP BY DATE_TRUNC('day', timestamp)
+          ORDER BY DATE_TRUNC('day', timestamp) ASC
+        `
+      : await prisma.$queryRaw<DailyRow[]>`
+          SELECT
+            TO_CHAR(DATE_TRUNC('day', timestamp), 'YYYY-MM-DD') AS date,
+            COUNT(*)::int                                        AS requests,
+            COALESCE(SUM(cost_usd),      0)                     AS cost,
+            COALESCE(SUM(tokens_used)::int, 0)                  AS tokens,
+            COALESCE(AVG(latency_ms)::int, 0)                   AS avg_latency
+          FROM logs
+          WHERE timestamp >= ${currentStart}
+          GROUP BY DATE_TRUNC('day', timestamp)
+          ORDER BY DATE_TRUNC('day', timestamp) ASC
+        `;
+
+    const [currentAgg, previousAgg, modelGroups, recentLogs] = await Promise.all([
       prisma.log.aggregate({
-        where: { timestamp: { gte: currentStart } },
+        where: { timestamp: { gte: currentStart }, ...ownerFilter },
         _count: { id: true },
         _sum:   { cost_usd: true, tokens_used: true },
         _avg:   { latency_ms: true },
       }),
       prisma.log.aggregate({
-        where: { timestamp: { gte: previousStart, lt: currentStart } },
+        where: { timestamp: { gte: previousStart, lt: currentStart }, ...ownerFilter },
         _count: { id: true },
         _sum:   { cost_usd: true, tokens_used: true },
         _avg:   { latency_ms: true },
       }),
-      prisma.$queryRaw<DailyRow[]>`
-        SELECT
-          TO_CHAR(DATE_TRUNC('day', timestamp), 'YYYY-MM-DD') AS date,
-          COUNT(*)::int                                        AS requests,
-          COALESCE(SUM(cost_usd),      0)                     AS cost,
-          COALESCE(SUM(tokens_used)::int, 0)                  AS tokens,
-          COALESCE(AVG(latency_ms)::int, 0)                   AS avg_latency
-        FROM logs
-        WHERE timestamp >= ${currentStart}
-        GROUP BY DATE_TRUNC('day', timestamp)
-        ORDER BY DATE_TRUNC('day', timestamp) ASC
-      `,
       prisma.log.groupBy({
         by: ['model'],
-        where: { timestamp: { gte: currentStart } },
+        where: { timestamp: { gte: currentStart }, ...ownerFilter },
         _count: { id: true },
         _sum:   { cost_usd: true, tokens_used: true },
         _avg:   { latency_ms: true },
         orderBy: { _count: { id: 'desc' } },
       }),
       prisma.log.findMany({
-        where:   { timestamp: { gte: currentStart } },
+        where:   { timestamp: { gte: currentStart }, ...ownerFilter },
         orderBy: { timestamp: 'desc' },
         take: 6,
       }),
     ]);
 
-    const curReqs = currentAgg._count.id;
+    const curReqs  = currentAgg._count.id;
     const prevReqs = previousAgg._count.id;
     const curCost  = currentAgg._sum.cost_usd    ?? 0;
     const prevCost = previousAgg._sum.cost_usd   ?? 0;

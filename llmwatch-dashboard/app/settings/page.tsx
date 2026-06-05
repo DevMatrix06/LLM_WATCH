@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
-const MOCK_API_KEY = 'lw_live_sk_k2m8n7p4q9r1s6t3u8v5w2x7y4z1a9b6c3';
+const PLACEHOLDER_KEY = 'lw_live_' + '•'.repeat(40);
 
 function CodeBlock({ code, language = 'ts' }: { code: string; language?: string }) {
   const [copied, setCopied] = useState(false);
@@ -40,7 +40,7 @@ const ANTHROPIC_SNIPPET = `import Anthropic from '@anthropic-ai/sdk';
 import { wrapAnthropic } from 'loglens';
 
 const client = wrapAnthropic(new Anthropic(), {
-  apiKey: '${MOCK_API_KEY}',
+  apiKey: '${apiKey || PLACEHOLDER_KEY}',
   projectId: 'my-app',
 });
 
@@ -55,7 +55,7 @@ const OPENAI_SNIPPET = `import OpenAI from 'openai';
 import { wrapOpenAI } from 'loglens';
 
 const client = wrapOpenAI(new OpenAI(), {
-  apiKey: '${MOCK_API_KEY}',
+  apiKey: '${apiKey || PLACEHOLDER_KEY}',
   projectId: 'my-app',
 });
 
@@ -65,9 +65,21 @@ const completion = await client.chat.completions.create({
 });`;
 
 export default function SettingsPage() {
-  const [revealed, setRevealed] = useState(false);
-  const [copied, setCopied] = useState(false);
+  const [apiKey, setApiKey]       = useState('');
+  const [keyLoading, setKeyLoading] = useState(true);
+  const [revealed, setRevealed]   = useState(false);
+  const [copied, setCopied]       = useState(false);
   const [activeTab, setActiveTab] = useState<'anthropic' | 'openai'>('anthropic');
+
+  useEffect(() => {
+    fetch('/api/user')
+      .then(r => r.ok ? r.json() : null)
+      .then((d: { api_key?: string } | null) => {
+        if (d?.api_key) setApiKey(d.api_key);
+      })
+      .catch(() => {})
+      .finally(() => setKeyLoading(false));
+  }, []);
 
   // Cost alert state
   const [alertEmail, setAlertEmail]       = useState('');
@@ -114,9 +126,11 @@ export default function SettingsPage() {
     }
   }
 
-  const displayKey = revealed
-    ? MOCK_API_KEY
-    : MOCK_API_KEY.slice(0, 10) + '•'.repeat(28);
+  const displayKey = keyLoading
+    ? 'Loading…'
+    : revealed
+    ? (apiKey || PLACEHOLDER_KEY)
+    : (apiKey || PLACEHOLDER_KEY).slice(0, 12) + '•'.repeat(28);
 
   return (
     <div className="min-h-full">
@@ -158,7 +172,7 @@ export default function SettingsPage() {
               </button>
               <button
                 onClick={() => {
-                  navigator.clipboard.writeText(MOCK_API_KEY);
+                  navigator.clipboard.writeText(apiKey);
                   setCopied(true);
                   setTimeout(() => setCopied(false), 1800);
                 }}

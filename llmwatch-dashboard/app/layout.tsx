@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Inter, JetBrains_Mono } from 'next/font/google';
+import { ClerkProvider } from '@clerk/nextjs';
 import './globals.css';
 import { ConditionalLayout } from '@/components/layout/conditional-layout';
 
@@ -22,10 +23,12 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable}`}>
-      <body className="bg-zinc-950 font-sans text-zinc-100 antialiased">
-        <ConditionalLayout>{children}</ConditionalLayout>
-      </body>
-    </html>
+    <ClerkProvider>
+      <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable}`}>
+        <body className="bg-zinc-950 font-sans text-zinc-100 antialiased">
+          <ConditionalLayout>{children}</ConditionalLayout>
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }

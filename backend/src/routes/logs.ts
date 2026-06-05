@@ -23,13 +23,12 @@ logsRouter.get('/', requireApiKey, async (req, res) => {
   }
 
   const { model, search, date_from, date_to, limit, offset } = result.data;
+  const ownerId = req.headers['x-clerk-user-id'] as string | undefined;
 
-  // Build as an AND array so each condition is fully typed independently.
   const conditions: Prisma.LogWhereInput[] = [];
 
-  if (model) {
-    conditions.push({ model });
-  }
+  if (ownerId) conditions.push({ owner_id: ownerId });
+  if (model)   conditions.push({ model });
 
   if (search) {
     conditions.push({
