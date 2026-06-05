@@ -11,6 +11,7 @@ class WatchOptions:
     session_id: str = ''
     tags: List[str] = field(default_factory=list)
     on_error: Optional[Callable[[Exception], None]] = None
+    mask_prompts: bool = False
 
 
 @dataclass

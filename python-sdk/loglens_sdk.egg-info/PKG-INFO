@@ -1,6 +1,6 @@
 Metadata-Version: 2.4
 Name: loglens-sdk
-Version: 0.1.0
+Version: 0.1.1
 Summary: LLM observability SDK — wraps Anthropic and OpenAI Python clients and logs every call
 License: MIT
 Keywords: llm,observability,anthropic,openai,logging,monitoring

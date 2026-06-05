@@ -16,7 +16,7 @@ def _do_send(body: bytes, endpoint: str, api_key: str, on_error) -> None:
             headers={
                 'Content-Type': 'application/json',
                 'Authorization': f'Bearer {api_key}',
-                'User-Agent': 'loglens-sdk-python/0.1.0',
+                'User-Agent': 'loglens-sdk-python/0.1.1',
             },
             method='POST',
         )
@@ -67,6 +67,9 @@ def send_log(payload, options) -> None:
 
     # remove None values and add enrichment fields
     body_dict = {k: v for k, v in body_dict.items() if v is not None}
+    if options.mask_prompts:
+        body_dict['prompt']     = '[masked]'
+        body_dict['completion'] = '[masked]'
     if options.project_id:
         body_dict['projectId'] = options.project_id
     if options.user_id:

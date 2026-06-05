@@ -65,6 +65,7 @@ model Settings {
   id             Int      @id @default(1)
   alert_email    String?
   cost_alert_usd Float?
+  retention_days Int?
   updated_at     DateTime @updatedAt
 
   @@map("settings")

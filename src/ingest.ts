@@ -68,7 +68,12 @@ export function sendLog(payload: LogPayload, options: WatchOptions): void {
     return;
   }
 
-  const body = JSON.stringify(buildEnriched(payload, options));
+  const enriched = buildEnriched(payload, options);
+  if (options.maskPrompts) {
+    enriched.prompt     = '[masked]';
+    enriched.completion = '[masked]';
+  }
+  const body = JSON.stringify(enriched);
 
   // Intentionally fire-and-forget: ingest must never throw or block the caller.
   fetch(options.endpoint ?? DEFAULT_ENDPOINT, {
@@ -76,7 +81,7 @@ export function sendLog(payload: LogPayload, options: WatchOptions): void {
     headers: {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${options.apiKey}`,
-      'User-Agent': 'loglens-sdk/0.4.2',
+      'User-Agent': 'loglens-sdk/0.4.3',
     },
     body,
   }).then(res => {

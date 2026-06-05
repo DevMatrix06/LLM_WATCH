@@ -24,4 +24,6 @@ export interface WatchOptions {
   userId?: string;
   sessionId?: string;
   tags?: string[];
+  /** When true, replaces prompt and completion with [masked] before sending. */
+  maskPrompts?: boolean;
 }

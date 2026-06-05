@@ -82,9 +82,10 @@ const completion = await client.chat.completions.create({
   messages: [{ role: 'user', content: 'Hello!' }],
 });`;
 
-  // Cost alert state
+  // Cost alert + retention state
   const [alertEmail, setAlertEmail]       = useState('');
   const [threshold, setThreshold]         = useState('');
+  const [retentionDays, setRetentionDays] = useState<7 | 30 | 90 | null>(null);
   const [alertSaving, setAlertSaving]     = useState(false);
   const [alertSaved, setAlertSaved]       = useState(false);
   const [alertError, setAlertError]       = useState('');
@@ -92,10 +93,11 @@ const completion = await client.chat.completions.create({
   useEffect(() => {
     fetch('/api/settings')
       .then(r => r.ok ? r.json() : null)
-      .then((d: { alert_email?: string | null; cost_alert_usd?: number | null } | null) => {
+      .then((d: { alert_email?: string | null; cost_alert_usd?: number | null; retention_days?: number | null } | null) => {
         if (!d) return;
         setAlertEmail(d.alert_email ?? '');
         setThreshold(d.cost_alert_usd != null ? String(d.cost_alert_usd) : '');
+        setRetentionDays((d.retention_days as 7 | 30 | 90 | null) ?? null);
       })
       .catch(() => {});
   }, []);
@@ -115,6 +117,7 @@ const completion = await client.chat.completions.create({
         body: JSON.stringify({
           alert_email:    alertEmail || null,
           cost_alert_usd: thresholdNum,
+          retention_days: retentionDays,
         }),
       });
       if (!res.ok) throw new Error('Save failed');
@@ -268,6 +271,47 @@ const completion = await client.chat.completions.create({
                 </button>
               )}
             </div>
+          </div>
+        </div>
+
+        {/* Data Retention */}
+        <div className="rounded-xl border border-zinc-800 bg-zinc-900">
+          <div className="flex items-start gap-3 border-b border-zinc-800 p-5">
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-zinc-700/40">
+              <svg className="h-4 w-4 text-zinc-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 5.625c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125" />
+              </svg>
+            </div>
+            <div>
+              <h2 className="text-sm font-medium text-zinc-200">Data Retention</h2>
+              <p className="mt-0.5 text-xs text-zinc-500">
+                Logs older than this are automatically deleted every 24 hours.
+              </p>
+            </div>
+          </div>
+
+          <div className="p-5">
+            <div className="flex gap-2">
+              {([7, 30, 90, null] as const).map((days) => (
+                <button
+                  key={String(days)}
+                  onClick={() => setRetentionDays(days)}
+                  className={cn(
+                    'rounded-md border px-3.5 py-1.5 text-xs font-medium transition-colors',
+                    retentionDays === days
+                      ? 'border-indigo-500 bg-indigo-500/10 text-indigo-300'
+                      : 'border-zinc-700 text-zinc-500 hover:border-zinc-600 hover:text-zinc-300',
+                  )}
+                >
+                  {days === null ? 'Forever' : `${days}d`}
+                </button>
+              ))}
+            </div>
+            <p className="mt-2 text-[11px] text-zinc-600">
+              {retentionDays === null
+                ? 'Logs are kept indefinitely.'
+                : `Logs older than ${retentionDays} days will be purged automatically.`}
+            </p>
           </div>
         </div>
 

@@ -1,7 +1,25 @@
 {
   "permissions": {
     "allow": [
-      "Bash(dir dist *)"
+      "Bash(dir dist *)",
+      "Bash(git push *)",
+      "Bash(git -C \"D:\\\\Projects\\\\LLM_WATCH\" status)",
+      "Bash(git -C \"D:\\\\Projects\\\\LLM_WATCH\" diff --stat)",
+      "Bash(git -C \"D:\\\\Projects\\\\LLM_WATCH\" add backend/.env.example backend/package.json backend/src/index.ts backend/src/routes/admin.ts backend/src/routes/analytics.ts backend/src/routes/ingest.ts backend/src/routes/logs.ts backend/src/routes/stats.ts backend/src/routes/waitlist.ts llmwatch-dashboard/app/admin/page.tsx llmwatch-dashboard/app/evals/page.tsx llmwatch-dashboard/app/layout.tsx llmwatch-dashboard/app/page.tsx llmwatch-dashboard/app/settings/page.tsx llmwatch-dashboard/components/layout/sidebar.tsx llmwatch-dashboard/components/logs/log-table.tsx llmwatch-dashboard/lib/mock-data.ts llmwatch-dashboard/package.json package.json src/ingest.ts test.ts)",
+      "Bash(npx prisma *)",
+      "Bash(git -C \"D:\\\\Projects\\\\LLM_WATCH\" add backend/prisma/schema.prisma backend/src/routes/ingest.ts src/types.ts src/ingest.ts src/wrap-anthropic.ts src/wrap-openai.ts llmwatch-dashboard/lib/api.ts llmwatch-dashboard/components/ui/badge.tsx llmwatch-dashboard/components/logs/log-table.tsx llmwatch-dashboard/components/logs/log-detail.tsx)",
+      "Bash(git -C 'D:\\\\Projects\\\\LLM_WATCH' commit -m ' *)",
+      "Bash(git -C \"D:\\\\Projects\\\\LLM_WATCH\" push)",
+      "Bash(git -C \"D:\\\\Projects\\\\LLM_WATCH\" add backend/seed.ts)",
+      "Bash(npx tsc *)",
+      "Bash(git -C \"D:\\\\Projects\\\\LLM_WATCH\" add backend/prisma/schema.prisma backend/src/middleware/auth.ts backend/src/routes/user.ts backend/src/routes/ingest.ts backend/src/routes/logs.ts backend/src/routes/stats.ts backend/src/index.ts llmwatch-dashboard/middleware.ts llmwatch-dashboard/app/layout.tsx llmwatch-dashboard/app/api/user/route.ts llmwatch-dashboard/app/api/logs/route.ts llmwatch-dashboard/app/api/stats/route.ts llmwatch-dashboard/app/settings/page.tsx llmwatch-dashboard/components/layout/sidebar.tsx llmwatch-dashboard/package.json llmwatch-dashboard/package-lock.json llmwatch-dashboard/.env.local.example)",
+      "Bash(node -e \"console.log\\(require\\('./node_modules/@clerk/nextjs/package.json'\\).version\\)\")",
+      "Bash(npm whoami *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(npm publish *)",
+      "Bash(pip install *)",
+      "Bash(python -m build)"
     ]
   }
 }
