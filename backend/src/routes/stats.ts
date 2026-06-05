@@ -99,7 +99,7 @@ statsRouter.get('/overview', requireApiKey, async (req, res) => {
       recent_logs: recentLogs,
     });
   } catch (err) {
-    console.error('[llmwatch] stats error:', err);
+    console.error('[loglens] stats error:', err);
     res.status(500).json({ error: 'Internal server error' });
   }
 });

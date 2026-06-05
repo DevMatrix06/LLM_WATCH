@@ -293,7 +293,7 @@ export const LOGS: LogEntry[] = [
     timestamp: '2026-06-04T11:23:51Z',
     model: 'claude-sonnet-4-6',
     prompt: 'Write a compelling LinkedIn post announcing our new Series A funding round of $12M led by Sequoia.',
-    completion: 'Thrilled to share that we\'ve raised $12M in Series A funding, led by Sequoia Capital 🚀\n\nWhen we started two years ago with three engineers and an idea, the problem was clear: developers had no visibility into what their LLMs were actually doing in production. Today, 2,400 teams use LLMWatch to observe, debug, and improve their AI applications.\n\nThis funding lets us:\n→ Expand our evals platform (launching Q3)\n→ Grow the team from 12 to 30 by EOY\n→ Build the integrations you\'ve been asking for\n\nTo our users, investors, and team — thank you. The best is ahead.\n\n#AI #LLMOps #Observability #Fundraising',
+    completion: 'Thrilled to share that we\'ve raised $12M in Series A funding, led by Sequoia Capital 🚀\n\nWhen we started two years ago with three engineers and an idea, the problem was clear: developers had no visibility into what their LLMs were actually doing in production. Today, 2,400 teams use LogLens to observe, debug, and improve their AI applications.\n\nThis funding lets us:\n→ Expand our evals platform (launching Q3)\n→ Grow the team from 12 to 30 by EOY\n→ Build the integrations you\'ve been asking for\n\nTo our users, investors, and team — thank you. The best is ahead.\n\n#AI #LLMOps #Observability #Fundraising',
     latency_ms: 1876, input_tokens: 52, output_tokens: 201, tokens_used: 253, cost_usd: 0.003588,
     project_id: 'proj_internal', user_id: 'user_h4j1', session_id: 'sess_m9n2', tags: ['copywriting', 'marketing'],
   },

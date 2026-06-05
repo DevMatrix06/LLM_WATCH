@@ -55,7 +55,7 @@ ingestRouter.post('/', requireApiKey, async (req, res) => {
 
     res.status(200).json({ ok: true });
   } catch (err) {
-    console.error('[llmwatch] DB write error:', err);
+    console.error('[loglens] DB write error:', err);
     res.status(500).json({ error: 'Internal server error' });
   }
 });

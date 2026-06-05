@@ -11,7 +11,7 @@ analyticsRouter.post('/visit', requireApiKey, async (req, res) => {
     const total = await prisma.pageVisit.count({ where: { page } });
     res.json({ total });
   } catch (err) {
-    console.error('[llmwatch] analytics error:', err);
+    console.error('[loglens] analytics error:', err);
     res.status(500).json({ error: 'Internal server error' });
   }
 });

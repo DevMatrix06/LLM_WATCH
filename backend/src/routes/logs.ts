@@ -60,7 +60,7 @@ logsRouter.get('/', requireApiKey, async (req, res) => {
     ]);
     res.json({ data, total, limit, offset });
   } catch (err) {
-    console.error('[llmwatch] logs query error:', err);
+    console.error('[loglens] logs query error:', err);
     res.status(500).json({ error: 'Internal server error' });
   }
 });

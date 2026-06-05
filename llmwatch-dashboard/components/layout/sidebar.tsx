@@ -29,7 +29,7 @@ export function Sidebar() {
         <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-600 shadow-lg shadow-indigo-900/40">
           <Eye className="h-3.5 w-3.5 text-white" strokeWidth={2.5} />
         </div>
-        <span className="text-sm font-semibold tracking-tight text-zinc-100">LLMWatch</span>
+        <span className="text-sm font-semibold tracking-tight text-zinc-100">LogLens</span>
         <span className="ml-auto rounded px-1.5 py-0.5 text-[10px] font-medium text-zinc-600 ring-1 ring-zinc-800">
           v0.4
         </span>

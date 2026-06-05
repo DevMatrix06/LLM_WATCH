@@ -8,7 +8,7 @@ import { analyticsRouter } from './routes/analytics';
 import { adminRouter }    from './routes/admin';
 
 if (!process.env.API_KEY) {
-  console.error('[llmwatch] ERROR: API_KEY environment variable must be set');
+  console.error('[loglens] ERROR: API_KEY environment variable must be set');
   process.exit(1);
 }
 
@@ -31,5 +31,5 @@ app.use('/api/admin',      adminRouter);
 
 const PORT = Number(process.env.PORT ?? 3001);
 app.listen(PORT, () => {
-  console.log(`[llmwatch] server listening on :${PORT}`);
+  console.log(`[loglens] server listening on :${PORT}`);
 });

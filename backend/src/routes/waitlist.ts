@@ -24,7 +24,7 @@ waitlistRouter.post('/', requireApiKey, async (req, res) => {
       res.status(409).json({ error: 'Already on the waitlist', count });
       return;
     }
-    console.error('[llmwatch] waitlist error:', err);
+    console.error('[loglens] waitlist error:', err);
     res.status(500).json({ error: 'Internal server error' });
     return;
   }

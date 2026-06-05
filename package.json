@@ -1,5 +1,5 @@
 {
-  "name": "llmwatch",
+  "name": "loglens",
   "version": "0.4.0",
   "description": "AI observability SDK — wraps Anthropic and OpenAI clients and logs every request",
   "main": "dist/index.js",

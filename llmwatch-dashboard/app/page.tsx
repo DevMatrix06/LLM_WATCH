@@ -80,7 +80,7 @@ export default async function LandingPage() {
             <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-600 shadow-lg shadow-indigo-900/40">
               <Eye className="h-3.5 w-3.5 text-white" strokeWidth={2.5} />
             </div>
-            LLMWatch
+            LogLens
           </a>
 
           <nav className="hidden items-center gap-6 md:flex">
@@ -138,7 +138,7 @@ export default async function LandingPage() {
           </h1>
 
           <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-zinc-400">
-            LLMWatch intercepts every LLM call and shows you prompts, completions,
+            LogLens intercepts every LLM call and shows you prompts, completions,
             latency, cost and tokens in real time.
           </p>
 
@@ -161,9 +161,9 @@ export default async function LandingPage() {
           <div className="mx-auto mt-10 flex max-w-xs items-center gap-3 rounded-lg border border-zinc-700/60 bg-zinc-900 px-4 py-3">
             <Terminal className="h-4 w-4 shrink-0 text-zinc-600" />
             <code className="flex-1 text-left font-mono text-sm text-zinc-200">
-              npm install llmwatch
+              npm install loglens
             </code>
-            <CopyButton text="npm install llmwatch" />
+            <CopyButton text="npm install loglens" />
           </div>
 
           <p className="mt-3 text-xs text-zinc-600">
@@ -190,7 +190,7 @@ export default async function LandingPage() {
               </div>
               <div className="flex-1">
                 <div className="mx-auto max-w-xs rounded bg-zinc-800 px-3 py-1 text-center text-xs text-zinc-500">
-                  app.llmwatch.io/dashboard
+                  app.loglens.io/dashboard
                 </div>
               </div>
             </div>
@@ -198,7 +198,7 @@ export default async function LandingPage() {
               <iframe
                 src="/dashboard"
                 className="h-full w-full border-0"
-                title="LLMWatch Dashboard"
+                title="LogLens Dashboard"
               />
             </div>
           </div>
@@ -371,7 +371,7 @@ export default async function LandingPage() {
             <div className="flex h-5 w-5 items-center justify-center rounded bg-indigo-600">
               <Eye className="h-3 w-3 text-white" strokeWidth={2.5} />
             </div>
-            <span>LLMWatch</span>
+            <span>LogLens</span>
             <span>·</span>
             <span>© 2026</span>
           </div>

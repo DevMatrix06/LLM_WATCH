@@ -2,7 +2,7 @@ import Anthropic from '@anthropic-ai/sdk';
 import { wrapAnthropic } from './src/index';
 
 const client = wrapAnthropic(new Anthropic(), {
-  apiKey:    'lw_llmwatch2026',
+  apiKey:    'lw_loglens2026',
   endpoint:  'http://localhost:3001/ingest',
   projectId: 'test',
 });

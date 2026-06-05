@@ -16,7 +16,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'LLMWatch — AI Observability',
+  title: 'LogLens — AI Observability',
   description: 'Observe, debug, and improve your LLM applications.',
 };
 

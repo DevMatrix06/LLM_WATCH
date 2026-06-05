@@ -37,7 +37,7 @@ function CodeBlock({ code, language = 'ts' }: { code: string; language?: string 
 }
 
 const ANTHROPIC_SNIPPET = `import Anthropic from '@anthropic-ai/sdk';
-import { wrapAnthropic } from 'llmwatch';
+import { wrapAnthropic } from 'loglens';
 
 const client = wrapAnthropic(new Anthropic(), {
   apiKey: '${MOCK_API_KEY}',
@@ -52,7 +52,7 @@ const msg = await client.messages.create({
 });`;
 
 const OPENAI_SNIPPET = `import OpenAI from 'openai';
-import { wrapOpenAI } from 'llmwatch';
+import { wrapOpenAI } from 'loglens';
 
 const client = wrapOpenAI(new OpenAI(), {
   apiKey: '${MOCK_API_KEY}',
@@ -90,7 +90,7 @@ export default function SettingsPage() {
             <div>
               <h2 className="text-sm font-medium text-zinc-200">API Key</h2>
               <p className="mt-0.5 text-xs text-zinc-500">
-                Use this key to authenticate the llmwatch SDK. Keep it secret — anyone with this key
+                Use this key to authenticate the LogLens SDK. Keep it secret — anyone with this key
                 can write to your project.
               </p>
             </div>
@@ -137,7 +137,7 @@ export default function SettingsPage() {
           <div className="border-b border-zinc-800 p-5">
             <h2 className="text-sm font-medium text-zinc-200">SDK Integration</h2>
             <p className="mt-0.5 text-xs text-zinc-500">
-              Drop llmwatch into an existing project in under a minute.
+              Drop loglens into an existing project in under a minute.
             </p>
           </div>
 
@@ -145,7 +145,7 @@ export default function SettingsPage() {
             {/* Install */}
             <div>
               <p className="mb-2 text-xs font-medium text-zinc-500">1. Install</p>
-              <CodeBlock code="npm install llmwatch" language="bash" />
+              <CodeBlock code="npm install loglens" language="bash" />
             </div>
 
             {/* Tabs */}

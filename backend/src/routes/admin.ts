@@ -16,7 +16,7 @@ adminRouter.get('/overview', requireApiKey, async (_req, res) => {
     ]);
     res.json({ totalVisits, totalSignups, signups });
   } catch (err) {
-    console.error('[llmwatch] admin error:', err);
+    console.error('[loglens] admin error:', err);
     res.status(500).json({ error: 'Internal server error' });
   }
 });

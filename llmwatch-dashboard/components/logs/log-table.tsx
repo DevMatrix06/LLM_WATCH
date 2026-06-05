@@ -146,7 +146,7 @@ export function LogTable() {
                 <td colSpan={7} className="py-16 text-center text-sm text-zinc-600">
                   {debouncedSearch || model
                     ? 'No results match your filters.'
-                    : 'No logs yet. Instrument your app with the llmwatch SDK.'}
+                    : 'No logs yet. Instrument your app with the LogLens SDK.'}
                 </td>
               </tr>
             ) : (

@@ -48,7 +48,7 @@ export default function EvalsPage() {
             Evals are in development
           </h2>
           <p className="mt-2 text-sm leading-relaxed text-zinc-500">
-            We&apos;re building a first-class evaluation platform directly into LLMWatch.
+            We&apos;re building a first-class evaluation platform directly into LogLens.
             No stitching together notebooks and spreadsheets — everything in one place,
             tied to your real production logs.
           </p>

@@ -1,6 +1,6 @@
 import { LogPayload, WatchOptions } from './types';
 
-const DEFAULT_ENDPOINT = 'https://api.llmwatch.io/ingest';
+const DEFAULT_ENDPOINT = 'https://api.loglens.io/ingest';
 
 // Printed once per process so dev mode is obvious but not spammy.
 let devNoticePrinted = false;
@@ -21,7 +21,7 @@ function truncate(s: string, n = 120): string {
 
 function devLog(payload: LogPayload, options: WatchOptions): void {
   if (!devNoticePrinted) {
-    console.log('[llmwatch] Dev mode — set apiKey to send logs to the dashboard.\n');
+    console.log('[loglens] Dev mode — set apiKey to send logs to the dashboard.\n');
     devNoticePrinted = true;
   }
 
@@ -38,7 +38,7 @@ function devLog(payload: LogPayload, options: WatchOptions): void {
     enriched.sessionId && `session:${enriched.sessionId}`,
   ].filter(Boolean).join('  ·  ');
 
-  console.log(`[llmwatch] ${meta}`);
+  console.log(`[loglens] ${meta}`);
   console.log(`  prompt:     ${truncate(payload.prompt)}`);
   console.log(`  completion: ${truncate(payload.completion)}`);
   if (Array.isArray(enriched.tags) && enriched.tags.length) {
@@ -61,13 +61,13 @@ export function sendLog(payload: LogPayload, options: WatchOptions): void {
     headers: {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${options.apiKey}`,
-      'User-Agent': 'llmwatch-sdk/0.4.0',
+      'User-Agent': 'loglens-sdk/0.4.0',
     },
     body,
   }).then(res => {
     if (!res.ok) {
       options.onError?.(
-        new Error(`LLMWatch ingest failed: HTTP ${res.status} ${res.statusText}`),
+        new Error(`LogLens ingest failed: HTTP ${res.status} ${res.statusText}`),
       );
     }
   }).catch(err => {
