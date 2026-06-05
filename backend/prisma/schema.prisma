@@ -47,3 +47,12 @@ model PageVisit {
   @@index([page])
   @@map("page_visits")
 }
+
+model Settings {
+  id             Int      @id @default(1)
+  alert_email    String?
+  cost_alert_usd Float?
+  updated_at     DateTime @updatedAt
+
+  @@map("settings")
+}

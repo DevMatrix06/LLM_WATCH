@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { z } from 'zod';
 import { prisma } from '../lib/prisma';
 import { requireApiKey } from '../middleware/auth';
+import { maybeSendCostAlert } from '../lib/alerts';
 
 const LogPayloadSchema = z.object({
   timestamp:     z.string().datetime({ message: 'timestamp must be an ISO 8601 datetime' }),
@@ -54,6 +55,7 @@ ingestRouter.post('/', requireApiKey, async (req, res) => {
     });
 
     res.status(200).json({ ok: true });
+    maybeSendCostAlert(d.cost_usd, d.model, d.prompt).catch(() => {});
   } catch (err) {
     console.error('[loglens] DB write error:', err);
     res.status(500).json({ error: 'Internal server error' });

@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { Key, Copy, Check, Eye, EyeOff, Terminal } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Key, Copy, Check, Eye, EyeOff, Terminal, Bell, BellOff } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -69,6 +69,51 @@ export default function SettingsPage() {
   const [copied, setCopied] = useState(false);
   const [activeTab, setActiveTab] = useState<'anthropic' | 'openai'>('anthropic');
 
+  // Cost alert state
+  const [alertEmail, setAlertEmail]       = useState('');
+  const [threshold, setThreshold]         = useState('');
+  const [alertSaving, setAlertSaving]     = useState(false);
+  const [alertSaved, setAlertSaved]       = useState(false);
+  const [alertError, setAlertError]       = useState('');
+
+  useEffect(() => {
+    fetch('/api/settings')
+      .then(r => r.ok ? r.json() : null)
+      .then((d: { alert_email?: string | null; cost_alert_usd?: number | null } | null) => {
+        if (!d) return;
+        setAlertEmail(d.alert_email ?? '');
+        setThreshold(d.cost_alert_usd != null ? String(d.cost_alert_usd) : '');
+      })
+      .catch(() => {});
+  }, []);
+
+  async function saveAlertSettings() {
+    setAlertSaving(true);
+    setAlertError('');
+    try {
+      const thresholdNum = threshold === '' ? null : parseFloat(threshold);
+      if (thresholdNum !== null && (isNaN(thresholdNum) || thresholdNum <= 0)) {
+        setAlertError('Threshold must be a positive number.');
+        return;
+      }
+      const res = await fetch('/api/settings', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          alert_email:    alertEmail || null,
+          cost_alert_usd: thresholdNum,
+        }),
+      });
+      if (!res.ok) throw new Error('Save failed');
+      setAlertSaved(true);
+      setTimeout(() => setAlertSaved(false), 2000);
+    } catch {
+      setAlertError('Could not save settings. Try again.');
+    } finally {
+      setAlertSaving(false);
+    }
+  }
+
   const displayKey = revealed
     ? MOCK_API_KEY
     : MOCK_API_KEY.slice(0, 10) + '•'.repeat(28);
@@ -129,6 +174,85 @@ export default function SettingsPage() {
             <p className="mt-2 text-[11px] text-zinc-600">
               Created June 1, 2026 · Last used 2 minutes ago
             </p>
+          </div>
+        </div>
+
+        {/* Cost Alerts */}
+        <div className="rounded-xl border border-zinc-800 bg-zinc-900">
+          <div className="flex items-start gap-3 border-b border-zinc-800 p-5">
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-amber-500/10">
+              <Bell className="h-4 w-4 text-amber-400" />
+            </div>
+            <div>
+              <h2 className="text-sm font-medium text-zinc-200">Cost Alerts</h2>
+              <p className="mt-0.5 text-xs text-zinc-500">
+                Get an email when a single LLM call exceeds your cost threshold.
+              </p>
+            </div>
+          </div>
+
+          <div className="space-y-4 p-5">
+            <div>
+              <label className="mb-1.5 block text-xs font-medium text-zinc-500">
+                Alert email
+              </label>
+              <input
+                type="email"
+                value={alertEmail}
+                onChange={e => setAlertEmail(e.target.value)}
+                placeholder="you@example.com"
+                className="h-9 w-full rounded-md border border-zinc-700 bg-zinc-800 px-3 text-sm text-zinc-200 placeholder:text-zinc-600 focus:border-zinc-600 focus:outline-none focus:ring-1 focus:ring-indigo-500/40"
+              />
+            </div>
+
+            <div>
+              <label className="mb-1.5 block text-xs font-medium text-zinc-500">
+                Cost threshold per call (USD)
+              </label>
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-zinc-500">$</span>
+                <input
+                  type="number"
+                  min="0.0001"
+                  step="0.001"
+                  value={threshold}
+                  onChange={e => setThreshold(e.target.value)}
+                  placeholder="0.01"
+                  className="h-9 w-full rounded-md border border-zinc-700 bg-zinc-800 pl-6 pr-3 text-sm text-zinc-200 placeholder:text-zinc-600 focus:border-zinc-600 focus:outline-none focus:ring-1 focus:ring-indigo-500/40"
+                />
+              </div>
+              <p className="mt-1.5 text-[11px] text-zinc-600">
+                Leave blank to disable alerts.
+              </p>
+            </div>
+
+            {alertError && (
+              <p className="text-xs text-red-400">{alertError}</p>
+            )}
+
+            <div className="flex items-center gap-3">
+              <button
+                onClick={saveAlertSettings}
+                disabled={alertSaving}
+                className="inline-flex h-8 items-center gap-1.5 rounded-md bg-indigo-600 px-3.5 text-xs font-medium text-white transition-colors hover:bg-indigo-500 disabled:opacity-50"
+              >
+                {alertSaved ? (
+                  <><Check className="h-3.5 w-3.5" /> Saved</>
+                ) : alertSaving ? (
+                  'Saving…'
+                ) : (
+                  'Save alert settings'
+                )}
+              </button>
+              {(alertEmail || threshold) && (
+                <button
+                  onClick={() => { setAlertEmail(''); setThreshold(''); }}
+                  className="inline-flex h-8 items-center gap-1.5 rounded-md border border-zinc-700 px-3 text-xs text-zinc-500 transition-colors hover:border-zinc-600 hover:text-zinc-300"
+                >
+                  <BellOff className="h-3.5 w-3.5" /> Disable
+                </button>
+              )}
+            </div>
           </div>
         </div>
 
