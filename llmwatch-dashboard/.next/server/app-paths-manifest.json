@@ -1,6 +1,0 @@
-{
-  "/page": "app/page.js",
-  "/logs/page": "app/logs/page.js",
-  "/evals/page": "app/evals/page.js",
-  "/settings/page": "app/settings/page.js"
-}
