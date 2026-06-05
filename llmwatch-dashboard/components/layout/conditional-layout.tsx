@@ -4,7 +4,7 @@ import { usePathname } from 'next/navigation';
 import { Sidebar } from './sidebar';
 
 // These routes render their own full-page layout — no sidebar.
-const NO_SIDEBAR = new Set(['/', '/admin']);
+const NO_SIDEBAR = new Set(['/', '/admin', '/data']);
 
 export function ConditionalLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();

@@ -380,6 +380,7 @@ export default async function LandingPage() {
             <a href="/dashboard" className="hover:text-zinc-400 transition-colors">Dashboard</a>
             <a href="/logs"      className="hover:text-zinc-400 transition-colors">Logs</a>
             <a href="/settings"  className="hover:text-zinc-400 transition-colors">Settings</a>
+            <a href="/data"      className="hover:text-zinc-400 transition-colors">Data &amp; Privacy</a>
           </div>
         </div>
       </footer>
