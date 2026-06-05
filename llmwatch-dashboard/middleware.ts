@@ -13,9 +13,10 @@ export default clerkMiddleware(async (auth, request) => {
   }
 });
 
+// Clerk's recommended matcher for Next.js App Router (v5+)
 export const config = {
   matcher: [
-    '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
+    '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jfe|ico|png|svg|jpg|jpeg|gif|webp|woff2?|ttf|otf|eot)).*)',
     '/(api|trpc)(.*)',
   ],
 };
